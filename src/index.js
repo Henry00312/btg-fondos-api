@@ -1316,7 +1316,7 @@ if (require.main === module) {
     })
     .catch((error) => {
       console.error('🚨 Error al conectar base de datos:', error.message);
-      console.log('❌ El servidor no arrancó por fallo de conexión a MongoDB.');
+      process.exit(1); // <--- ESTO es lo que App Runner necesita ver
     });
 }
 

@@ -148,7 +148,7 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error('❌ Error de conexión a MongoDB:', error.message);
-    process.exit(1);
+    throw error;
   }
 };
 
@@ -1291,20 +1291,32 @@ app.use('*', (req, res) => {
   });
 });
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❗ Rechazo no manejado:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❗ Excepción no capturada:', error);
+});
 module.exports = app;
 
 // Conectar a la base de datos e iniciar servidor
 if (require.main === module) {
-  connectDB().then(() => {
-    app.listen(PORT, () => {
-      console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`📊 Endpoints disponibles:`);
-      console.log(`   GET  http://localhost:${PORT}/`);
-      console.log(`   GET  http://localhost:${PORT}/api/fondos`);
-      console.log(`   POST http://localhost:${PORT}/api/clientes`);
-      console.log(`   POST http://localhost:${PORT}/api/fondos/:id/suscribir`);
-      console.log(`   GET  http://localhost:${PORT}/api/transacciones`);
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`📊 Endpoints disponibles:`);
+        console.log(`   GET  http://localhost:${PORT}/`);
+        console.log(`   GET  http://localhost:${PORT}/api/fondos`);
+        console.log(`   POST http://localhost:${PORT}/api/clientes`);
+        console.log(`   POST http://localhost:${PORT}/api/fondos/:id/suscribir`);
+        console.log(`   GET  http://localhost:${PORT}/api/transacciones`);
+      });
+    })
+    .catch((error) => {
+      console.error('🚨 Error al conectar base de datos:', error.message);
+      console.log('❌ El servidor no arrancó por fallo de conexión a MongoDB.');
     });
-  });
 }
 

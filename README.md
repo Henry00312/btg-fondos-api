@@ -27,7 +27,7 @@ La API está desplegada en AWS App Runner y puede ser accedida desde el siguient
 
 ---
 
-## 🛣Rutas Disponibles
+## Rutas Disponibles
 
 ### Autenticación
 ```

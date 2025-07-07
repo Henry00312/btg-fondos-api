@@ -179,7 +179,7 @@ npm run test:watch # Pruebas en modo watch
 
 ---
 
-## 🏗Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 ```
 src/
@@ -201,7 +201,7 @@ src/
 
 ---
 
-##  Seguridad Implementada
+## Seguridad Implementada
 
 - ✅ **Encriptación de contraseñas** con bcrypt
 - ✅ **Autenticación JWT** con expiración de 24h
@@ -213,7 +213,7 @@ src/
 
 ---
 
-## 📈Características Avanzadas
+## Características Avanzadas
 
 - **Paginación** en listados de transacciones
 - **Filtros avanzados** por fecha, tipo, estado
@@ -225,15 +225,15 @@ src/
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 **Henry David Barrera Osorio**  
 Desarrollador de Software  
-📧 Email: henrybarreraosorio@gmail.com  
-🐙 GitHub: [@Henry00312](https://github.com/Henry00312)  
+Email: henrybarreraosorio@gmail.com  
+GitHub: [@Henry00312](https://github.com/Henry00312)  
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto fue desarrollado como parte de una prueba técnica y es de uso académico/evaluativo.

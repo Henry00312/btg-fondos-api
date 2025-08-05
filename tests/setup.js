@@ -53,9 +53,3 @@ afterAll(async () => {
 
 // Configuraciones globales para tests
 jest.setTimeout(10000);
-
-// ⚠️ COMENTADAS PARA PERMITIR DEBUG - Descomenta estas líneas después del debug
-// if (process.env.NODE_ENV === 'test') {
-//   console.log = jest.fn();
-//   console.error = jest.fn();
-// }

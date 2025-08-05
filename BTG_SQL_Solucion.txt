@@ -1,0 +1,123 @@
+-- ====================================================================
+-- PRUEBA TÉCNICA BTG PACTUAL - PARTE 2 SQL (20%)
+-- Consulta solicitada: Obtener los nombres de los clientes que tienen 
+-- inscrito algún producto disponible solo en las sucursales que visitan
+-- ====================================================================
+
+-- SOLUCIÓN PRINCIPAL:
+SELECT DISTINCT c.nombre
+FROM Cliente c
+INNER JOIN Inscripcion i ON c.id = i.idCliente
+INNER JOIN Producto p ON i.idProducto = p.id
+WHERE EXISTS (
+    -- El cliente debe visitar alguna sucursal donde esté disponible el producto
+    SELECT 1
+    FROM Visitan v
+    INNER JOIN Disponibilidad d ON v.idSucursal = d.idSucursal
+    WHERE v.idCliente = c.id 
+    AND d.idProducto = p.id
+)
+AND NOT EXISTS (
+    -- El producto NO debe estar disponible en sucursales que el cliente no visita
+    SELECT 1
+    FROM Disponibilidad d2
+    WHERE d2.idProducto = p.id
+    AND d2.idSucursal NOT IN (
+        SELECT v2.idSucursal
+        FROM Visitan v2
+        WHERE v2.idCliente = c.id
+    )
+);
+
+-- ====================================================================
+-- EXPLICACIÓN DE LA LÓGICA:
+-- ====================================================================
+-- 1. Seleccionamos clientes que tienen productos inscritos
+-- 2. Verificamos que el cliente visite al menos una sucursal donde 
+--    esté disponible ese producto (primer EXISTS)
+-- 3. Verificamos que el producto NO esté disponible en ninguna 
+--    sucursal que el cliente no visite (segundo NOT EXISTS)
+-- 4. Esto garantiza que el producto esté disponible SOLO en las 
+--    sucursales que el cliente visita
+
+-- ====================================================================
+-- SOLUCIÓN ALTERNATIVA CON GROUP BY:
+-- ====================================================================
+
+SELECT DISTINCT c.nombre
+FROM Cliente c
+INNER JOIN Inscripcion i ON c.id = i.idCliente
+INNER JOIN Producto p ON i.idProducto = p.id
+WHERE p.id IN (
+    -- Productos que están disponibles solo en sucursales que el cliente visita
+    SELECT d.idProducto
+    FROM Disponibilidad d
+    WHERE d.idSucursal IN (
+        -- Sucursales que visita el cliente
+        SELECT v.idSucursal
+        FROM Visitan v
+        WHERE v.idCliente = c.id
+    )
+    GROUP BY d.idProducto
+    HAVING COUNT(DISTINCT d.idSucursal) = (
+        -- Total de sucursales donde está disponible el producto
+        SELECT COUNT(DISTINCT d2.idSucursal)
+        FROM Disponibilidad d2
+        WHERE d2.idProducto = d.idProducto
+    )
+);
+
+-- ====================================================================
+-- CONSULTAS ADICIONALES DE APOYO PARA VERIFICACIÓN:
+-- ====================================================================
+
+-- Consulta 1: Ver productos por cliente y sucursales donde están disponibles
+SELECT 
+    c.nombre AS cliente,
+    p.nombre AS producto,
+    s.nombre AS sucursal_disponible,
+    CASE 
+        WHEN v.idCliente IS NOT NULL THEN 'SÍ VISITA'
+        ELSE 'NO VISITA'
+    END AS cliente_visita_sucursal
+FROM Cliente c
+INNER JOIN Inscripcion i ON c.id = i.idCliente
+INNER JOIN Producto p ON i.idProducto = p.id
+INNER JOIN Disponibilidad d ON p.id = d.idProducto
+INNER JOIN Sucursal s ON d.idSucursal = s.id
+LEFT JOIN Visitan v ON c.id = v.idCliente AND s.id = v.idSucursal
+ORDER BY c.nombre, p.nombre, s.nombre;
+
+-- Consulta 2: Resumen de productos inscritos por cliente
+SELECT 
+    c.nombre AS cliente,
+    COUNT(DISTINCT i.idProducto) AS productos_inscritos,
+    COUNT(DISTINCT v.idSucursal) AS sucursales_visitadas
+FROM Cliente c
+LEFT JOIN Inscripcion i ON c.id = i.idCliente
+LEFT JOIN Visitan v ON c.id = v.idCliente
+GROUP BY c.id, c.nombre
+ORDER BY c.nombre;
+
+-- Consulta 3: Productos y en cuántas sucursales están disponibles
+SELECT 
+    p.nombre AS producto,
+    p.tipoProducto,
+    COUNT(DISTINCT d.idSucursal) AS sucursales_disponibles
+FROM Producto p
+LEFT JOIN Disponibilidad d ON p.id = d.idProducto
+GROUP BY p.id, p.nombre, p.tipoProducto
+ORDER BY sucursales_disponibles DESC, p.nombre;
+
+-- ====================================================================
+-- ANÁLISIS DEL PROBLEMA:
+-- ====================================================================
+-- La consulta busca clientes que cumplen estas condiciones:
+-- 1. Tienen al menos un producto inscrito
+-- 2. Ese producto está disponible ÚNICAMENTE en sucursales que visitan
+-- 3. Si el producto estuviera disponible en una sucursal que no visitan,
+--    ese cliente NO debe aparecer en el resultado
+--
+-- Es una consulta compleja que requiere verificar la exclusividad
+-- de la disponibilidad del producto en las sucursales visitadas.
+-- ====================================================================

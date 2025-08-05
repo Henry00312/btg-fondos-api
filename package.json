@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"    
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "fondos",
@@ -19,16 +19,21 @@
   "license": "ISC",
   "description": "API para gestión de fondos de inversión - BTG Pactual",
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
+    "nodemailer": "^7.0.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "jest": "^30.0.4",
+    "mongodb-memory-server": "^10.1.4",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.1"
   }

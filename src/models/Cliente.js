@@ -21,6 +21,11 @@ const clienteSchema = new mongoose.Schema({
     required: [true, 'La contraseña es requerida'],
     minlength: [6, 'La contraseña debe tener al menos 6 caracteres']
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'cliente'],
+    default: 'user'
+  },
   telefono: {
     type: String,
     trim: true,
